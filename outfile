@@ -1,0 +1,12 @@
+total 28
+drwxr-xr-x 3 moodeh students  154 Dec 15 16:34 .
+drwxr-xr-x 9 moodeh students  129 Dec 13 13:54 ..
+-rw-r--r-- 1 moodeh students 2543 Dec 15 15:54 find_path.c
+-rw-r--r-- 1 moodeh students   71 Dec 15 15:53 infile
+drwxr-xr-x 2 moodeh students 4096 Dec 13 13:54 libft
+-rw-r--r-- 1 moodeh students 3113 Dec 15 19:09 main.c
+-rw-r--r-- 1 moodeh students    0 Dec 13 13:54 Makefile
+-rw-r--r-- 1 moodeh students    0 Dec 15 19:13 outfile
+-rw-r--r-- 1 moodeh students 1230 Dec 15 19:04 pipex.h
+-rw-r--r-- 1 moodeh students 2628 Dec 15 19:10 process.c
+-rw-r--r-- 1 moodeh students  911 Dec 13 13:54 vald_input_args.c

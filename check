@@ -1,0 +1,56 @@
+
+You have covered the main logic (Pipes, Forks, Files), but to make your Pipex robust (and pass the 42 defense!), you need to handle these specific edge cases.
+1. The "Empty Command" Trap
+What if the user runs: ./pipex infile "" "wc -l" outfile?
+Your Code: ft_split("", ' ') might return an empty array or NULL.
+The Crash: If you try to access cmd_have_flag[0], you might segfault.
+The Check: Inside your process function, after splitting, ensure the array isn't empty.
+code
+C
+if (cmd_have_flag[0] == NULL)
+{
+    // Print "Permission denied" or "Command not found" and exit
+    ft_free_all(cmd_have_flag);
+    exit(127); // Standard exit code for "Command not found"
+}
+
+
+2. The "Environment is NULL" Case
+What if the user runs your program like this: env -i ./pipex ...?
+What happens: This clears the environment variables. envp will be NULL.
+The Crash: Your loop to find PATH= will crash when it tries to read envp[i].
+The Fix: Check if envp is NULL at the start of your "find path" function.
+If NULL, you can't find the path. You might have to try using a default path (like /bin:/usr/bin) or just fail gracefully.
+
+
+3. "Permission Denied" vs "Command Not Found"
+Your check_path function likely returns NULL if it can't find the command. But there are two reasons a command might fail:
+It doesn't exist: lsz -> Exit code 127.
+It exists but is not executable: (e.g., a script without chmod +x) -> Exit code 126.
+Refinement:
+If the command contains a / (e.g., ./script.sh or /bin/ls), do not look in PATH. Just check access(cmd, F_OK) and access(cmd, X_OK).
+If access says it exists (F_OK) but is not executable (X_OK), you should print "Permission denied" and exit with 126.
+
+
+4. Absolute Paths
+What if the user types /bin/ls instead of just ls?
+The Issue: Your check_path function probably tries to join /bin + / + /bin/ls -> /bin//bin/ls. This is wrong.
+The Check: Before looking through the PATH variable, check if argv[2] (the command) already creates a valid path using access(argv[2], X_OK).
+If access("/bin/ls") works, just use that string directly! Don't search the PATH.
+
+
+5. Input File Permission
+You are checking if infile opens. Good.
+Edge Case: If infile does not exist, standard shell behavior is:
+Print "No such file or directory".
+
+Does NOT run cmd1.
+STILL runs cmd2. (cmd2 just gets empty input).
+Your Pipex: Currently, if infile fails, you exit the child.
+This is mostly correct, but make sure your Pipe Write End is closed properly so cmd2 receives an EOF (End of File) and finishes with 0 input, rather than hanging.
+Summary Checklist of "Extra" Checks:
+Check for Empty Arguments: argc check (you have this).
+Check for Empty Command Strings: "" or " ".
+Check for NULL envp: Don't crash on env -i.
+Check for Direct Paths: Support /bin/ls without PATH search.
+Check for Whitespace-only commands: ft_split might give weird results on " ".
