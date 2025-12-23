@@ -6,28 +6,28 @@
 /*   By: moodeh <moodeh@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 02:33:04 by moodeh            #+#    #+#             */
-/*   Updated: 2025/12/17 04:03:41 by moodeh           ###   ########.fr       */
+/*   Updated: 2025/12/23 07:12:08 by moodeh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	is_it_full_path(char *cmd)
-{
-	if (access(cmd, F_OK) < 0)
-	{
-		printf("error file dosnt exisit\n");
-		return (FALSEE);
-	}
-	if (access(cmd, F_OK) < 0)
-	{
-		printf("error file dosnt excute\n");
-		return (FALSEE);
-	}
-	return (TRUEE); // is it full path and exisit and excutable
-}
+// static int	is_it_full_path(char *cmd)
+// {
+// 	if (access(cmd, F_OK) < 0)
+// 	{
+// 		printf("error file dosnt exisit\n");
+// 		return (FALSEE);
+// 	}
+// 	if (access(cmd, F_OK) < 0)
+// 	{
+// 		printf("error file dosnt excute\n");
+// 		return (FALSEE);
+// 	}
+// 	return (TRUEE); // is it full path and exisit and excutable
+// }
 
-char	*find_path(char *cmd, char **envp)
+static char	**find_path(char **envp)
 {
 	int		i;
 	char	**path;
@@ -51,7 +51,7 @@ char	*find_path(char *cmd, char **envp)
 // W_OK	Writable. Do we have permission to Write to it? (Crucial for outfile).
 
 // what if user inter the full path "/bin/ls"
-int	check_path(char *cmd, char **envp)
+char	*check_path(char *cmd, char **envp)
 {
 	char	**path;
 	char	*full_path;
@@ -59,23 +59,24 @@ int	check_path(char *cmd, char **envp)
 	int		i;
 
 	i = 0;
-	if (is_it_full_path(cmd))
-		return (check_full_path(cmd, envp));
+	//	if (is_it_full_path(cmd))
+	//		return (check_full_path(cmd, envp));
 	if ((full_name = ft_strjoin("/", cmd)))
 		return (FALSEE);
-	path = find_path(cmd, envp); // here we find all paths(folder)
-	while (path[i++] != NULL)
+	path = find_path(envp); // here we find all paths(folder)
+	while (path[i] != NULL)
 	{
-		if ((full_path = ft_strjoin(path, full_name)) == NULL)
+		if ((full_path = ft_strjoin(path[i], full_name)) == NULL)
 		{
 			free(full_name);
-			return (FALSEE);
+			return (NULL);
 		}
 		if (access(full_path, F_OK | X_OK) == 0)
 		{
 			ft_free_all(full_name, full_path);
-			return (full_path);//found the path 
+			return (full_path); // found the path
 		}
+		i++;
 	}
 	return (NULL);
 }

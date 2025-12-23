@@ -6,7 +6,7 @@
 /*   By: moodeh <moodeh@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 03:07:21 by moodeh            #+#    #+#             */
-/*   Updated: 2025/12/11 04:39:29 by moodeh           ###   ########.fr       */
+/*   Updated: 2025/12/23 05:40:37 by moodeh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	ft_free_all(void *first, ...)
 	va_list	args_to_free;
 
 	if (first == NULL)
-		return (NULL);
+		return ;
 	va_start(args_to_free, first);
 	ptr = first;
 	while (ptr != NULL)
@@ -31,6 +31,7 @@ void	ft_free_all(void *first, ...)
 	}
 	va_end(args_to_free);
 }
+
 // this fun is to free ** like split
 //Only use this on null-terminated arrays, like what ft_split creates.
 void	ft_free_all2(void **first, ...)
@@ -40,7 +41,7 @@ void	ft_free_all2(void **first, ...)
 	va_list	args_to_free;
 
 	if (first == NULL)
-		return (NULL);
+		return ;
 	va_start(args_to_free, first);
 	ptr = first;
 	while (ptr != NULL)
