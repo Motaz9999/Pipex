@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--wrap=malloc -Wl,--wrap=exit -Wl,--wrap=execve -Wl,--wrap=fork CMakeFiles/pipex_torture.dir/pipex_test.cpp.o CMakeFiles/pipex_torture.dir/home/motaz/core/42amman/Pipex/find_path.c.o CMakeFiles/pipex_torture.dir/home/motaz/core/42amman/Pipex/process.c.o -o pipex_torture  lib/libgtest_main.a ../../libft/libft.a -lpthread lib/libgtest.a 
