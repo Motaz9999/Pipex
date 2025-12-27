@@ -61,7 +61,7 @@ char	**find_path(char **envp)
 // R_OK Readable. Do we have permission to Read it? (Crucial for infile).
 // W_OK Writable. Do we have permission to Write to it? (Crucial for outfile).
 // what if user inter the full path "/bin/ls"
-char	*check_path(char *cmd, char *envp_path)
+char	*check_path(char *cmd, char **envp_path)
 {
 	t_names names;
 	// first we need to check the path if it full or just name

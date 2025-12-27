@@ -2,8 +2,8 @@ NAME = pipex
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
 
-LIBFT_DIR = ./libft
-LIBFT = $(LIBFT_DIR)/libft.a
+LIBFT_DIR =./libft
+LIBFT =$(LIBFT_DIR)/libft.a
 
 SRC = main.c \
 	  find_path.c \
@@ -12,7 +12,7 @@ OBJ = $(SRC:.c=.o)
 
 LINK = -L $(LIBFT_DIR) -lft
 
-INC = -I . $(LIBFT_DIR)
+INC = -I. -I$(LIBFT_DIR)
 
 all : $(NAME)
 $(NAME) : $(LIBFT) $(OBJ)

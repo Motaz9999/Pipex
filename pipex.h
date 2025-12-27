@@ -6,7 +6,7 @@
 /*   By: moodeh <moodeh@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/20 23:38:23 by moodeh            #+#    #+#             */
-/*   Updated: 2025/12/27 06:41:10 by moodeh           ###   ########.fr       */
+/*   Updated: 2025/12/27 06:49:48 by moodeh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # define TRUEE 1
 # include <errno.h>
 # include <fcntl.h>
-# include "libft.h"
+# include "libft/libft.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>

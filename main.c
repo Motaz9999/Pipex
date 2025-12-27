@@ -6,18 +6,18 @@
 /*   By: moodeh <moodeh@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 06:40:39 by moodeh            #+#    #+#             */
-/*   Updated: 2025/12/27 06:40:42 by moodeh           ###   ########.fr       */
+/*   Updated: 2025/12/27 06:50:40 by moodeh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-		// ok first  command file1 cmd1 cmd2 file2
-		// infile "ls -l" "wc -l" this done to file one
-		// command 1 done to file1 then | to the next command
-		// then the output of these 2 cmd to the file2
-		// put here the trash you want to clean
-		void error_handle(char *ar, pipex_t *pipex1)
+// ok first  command file1 cmd1 cmd2 file2
+// infile "ls -l" "wc -l" this done to file one
+// command 1 done to file1 then | to the next command
+// then the output of these 2 cmd to the file2
+// put here the trash you want to clean
+void	error_handle(char *ar, pipex_t *pipex1)
 {
 	if (pipex1 != NULL)
 	{
@@ -42,7 +42,8 @@ static int	parent(pipex_t *pipex1)
 	int	exit_cause;
 	int	status;
 
-	code Code if (pipex1->my_pipe[0] > 0) close(pipex1->my_pipe[0]);
+	if (pipex1->my_pipe[0] > 0)
+		close(pipex1->my_pipe[0]);
 	if (pipex1->my_pipe[1] > 0)
 		close(pipex1->my_pipe[1]);
 	waitpid(pipex1->pid1, NULL, 0);
