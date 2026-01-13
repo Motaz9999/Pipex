@@ -1,113 +1,60 @@
-# 🔗 pipex - Unix Pipes Implementation
+# Pipex
 
-<div align="center">
+A Unix pipe implementation in C that mimics shell pipe behavior, allowing the output of one command to become the input of another.
 
-![42 School Badge](https://img.shields.io/badge/42-pipex-blue)
-![Language](https://img.shields.io/badge/language-C-orange)
-![Grade](https://img.shields.io/badge/grade-100%2F100-brightgreen)
-![System](https://img.shields.io/badge/system-Unix-lightgrey)
+## 📖 Overview
 
-</div>
+Pipex is a 42 school project that recreates the shell's pipe mechanism (`|`). The program takes two commands and executes them sequentially, passing the output of the first command as input to the second command, similar to how pipes work in the shell.
 
-## 📋 About The Project
-
-**pipex** is a project from the 42 school curriculum that teaches you about **Unix pipes** and **process management** in C. You'll recreate the shell's pipe mechanism (`|`) that allows the output of one command to become the input of another.
-
-This project introduces fundamental Unix concepts:
-- Process creation with `fork()`
-- Inter-process communication with `pipe()`
-- File descriptor manipulation with `dup2()`
-- Program execution with `execve()`
-
-## 🎯 Project Purpose
-
-The purpose of pipex is to:
-- Replicate the behavior of shell pipes in C
-- Understand how processes communicate
-- Learn about file descriptors and I/O redirection
-- Master process creation and synchronization
-- Prepare for more complex projects like **minishell**
-
-## 📝 What I Learned
-
-Through this project, I gained expertise in:
-
-### Core Unix Concepts
-- **Processes**: Creating child processes with `fork()`
-- **Pipes**: Inter-process communication mechanisms
-- **File Descriptors**: Understanding fd 0 (stdin), 1 (stdout), 2 (stderr)
-- **I/O Redirection**: Redirecting input/output with `dup2()`
-- **Process Execution**: Replacing process image with `execve()`
-
-### System Calls
-- `fork()` - Create new process
-- `pipe()` - Create pipe for IPC
-- `dup2()` - Duplicate file descriptors
-- `execve()` - Execute program
-- `wait()` / `waitpid()` - Wait for child processes
-- `access()` - Check file permissions
-- `open()` / `close()` - File operations
-
-### Advanced Topics
-- **Process Tree**: Parent-child relationships
-- **Zombie Processes**: Understanding and preventing them
-- **File Permissions**: Checking and handling file access
-- **PATH Variable**: Finding executables in system paths
-- **Error Handling**: Proper error management in system calls
-
-## 🎮 How It Works
-
-### Shell Equivalent
-
-The program mimics this shell behavior:
-
+**Shell equivalent:**
 ```bash
 < infile cmd1 | cmd2 > outfile
 ```
 
-### Your Implementation
-
+**Pipex implementation:**
 ```bash
-./pipex infile "cmd1" "cmd2" outfile
+./pipex infile cmd1 cmd2 outfile
 ```
 
-### Example
+## 🎯 Project Purpose
 
-**Shell command:**
+This project teaches fundamental Unix concepts:
+- Process creation with `fork()`
+- Inter-process communication with `pipe()`
+- File descriptor manipulation with `dup2()`
+- Program execution with `execve()`
+- Error handling in system calls
+
+## 🔧 Installation
+
+### Prerequisites
+- GCC compiler
+- Make
+- Unix/Linux environment
+
+### Build
+
 ```bash
-< input.txt grep "hello" | wc -l > output.txt
-```
-
-**pipex equivalent:**
-```bash
-./pipex input.txt "grep hello" "wc -l" output.txt
-```
-
-Both produce the same result: count lines containing "hello" in input.txt and write the count to output.txt.
-
-## 🚀 How to Use
-
-### Compilation
-
-```bash
+# Clone the repository
 git clone https://github.com/Motaz9999/Pipex.git
 cd Pipex
+
+# Compile the project
 make
+
+# Clean object files
+make clean
+
+# Clean everything
+make fclean
+
+# Recompile
+make re
 ```
 
-This creates the `pipex` executable.
+## 💻 Usage
 
-### Make Commands
-
-```bash
-make        # Compile pipex
-make bonus  # Compile bonus (multiple pipes, here_doc)
-make clean  # Remove object files
-make fclean # Remove object files and executables
-make re     # Recompile everything
-```
-
-### Basic Usage
+### Basic Syntax
 
 ```bash
 ./pipex <infile> <cmd1> <cmd2> <outfile>
@@ -115,234 +62,253 @@ make re     # Recompile everything
 
 ### Examples
 
-**Example 1: Word count**
+**Example 1: Count lines**
 ```bash
-./pipex input.txt "cat" "wc -w" output.txt
-# Equivalent to: < input.txt cat | wc -w > output.txt
+./pipex input.txt "grep hello" "wc -l" output.txt
+# Equivalent to: < input.txt grep hello | wc -l > output.txt
 ```
 
-**Example 2: Grep and sort**
+**Example 2: Sort and filter**
 ```bash
-./pipex file.txt "grep error" "sort" errors.txt
-# Equivalent to: < file.txt grep error | sort > errors.txt
+./pipex data.txt "cat" "sort" sorted.txt
+# Equivalent to: < data.txt cat | sort > sorted.txt
 ```
 
-**Example 3: Multiple transformations**
+**Example 3: Process text**
 ```bash
-./pipex data.txt "grep 42" "wc -l" result.txt
-# Counts lines containing "42"
+./pipex file.txt "grep error" "wc -w" result.txt
+# Counts words containing "error" from file.txt
 ```
 
-## 🎁 Bonus Features
+## 🏗️ Implementation Details
 
-### Multiple Pipes
-
-Handle unlimited number of commands:
-
-```bash
-./pipex infile "cmd1" "cmd2" "cmd3" "cmd4" outfile
-# Equivalent to: < infile cmd1 | cmd2 | cmd3 | cmd4 > outfile
-```
-
-**Example:**
-```bash
-./pipex input.txt "cat" "grep a" "wc -l" output.txt
-```
-
-### Here_doc
-
-Support for here_doc (`<<`) with append mode (`>>`):
-
-```bash
-./pipex here_doc LIMITER "cmd1" "cmd2" outfile
-# Equivalent to: << LIMITER cmd1 | cmd2 >> outfile
-```
-
-**Example:**
-```bash
-./pipex here_doc EOF "grep hello" "wc -l" output.txt
-```
-
-Then type your input:
-```
-hello world
-this is a test
-hello 42
-EOF
-```
-
-The commands process what you typed and **append** to output.txt.
-
-## 🔧 Implementation Details
-
-### The Process Flow
+### Process Flow
 
 ```
 Parent Process
     │
-    ├─── fork() ───> Child 1 (executes cmd1)
+    ├─── fork() ──> Child 1 (Process 1)
     │                   │
-    │                   └── reads from infile
-    │                   └── writes to pipe
+    │                   ├─ Opens infile
+    │                   ├─ Redirects stdin from infile (dup2)
+    │                   ├─ Redirects stdout to pipe[1] (dup2)
+    │                   ├─ Executes cmd1
+    │                   └─ Writes output to pipe
     │
-    └─── fork() ───> Child 2 (executes cmd2)
+    └─── fork() ──> Child 2 (Process 2)
                         │
-                        └── reads from pipe
-                        └── writes to outfile
+                        ├─ Opens outfile
+                        ├─ Redirects stdin from pipe[0] (dup2)
+                        ├─ Redirects stdout to outfile (dup2)
+                        ├─ Executes cmd2
+                        └─ Writes result to outfile
 ```
 
-### Key Functions
+### Key Components
 
-#### 1. Creating a Pipe
-
+#### 1. Pipe Creation (`main.c`)
 ```c
-int pipe_fd[2];
+int my_pipe[2];
 
-// pipe_fd[0] = read end
-// pipe_fd[1] = write end
+if (pipe(my_pipe) == -1)
+    error_handle("Pipe failed", NULL, 1);
 
-if (pipe(pipe_fd) == -1)
-    error_exit("Pipe failed");
+// my_pipe[0] = read end
+// my_pipe[1] = write end
 ```
 
-#### 2. Forking Processes
+#### 2. Process Management
+- **Parent process**: Creates pipe, forks two children, waits for completion
+- **Child 1 (process_1)**: Reads from infile, executes cmd1, writes to pipe
+- **Child 2 (process_2)**: Reads from pipe, executes cmd2, writes to outfile
 
+#### 3. Path Resolution (`find_path.c`)
+
+The implementation handles three types of command paths:
+
+**Absolute paths:** `/bin/ls`
 ```c
-pid_t pid;
-
-pid = fork();
-if (pid == -1)
-    error_exit("Fork failed");
-    
-if (pid == 0)
-{
-    // Child process
-    execute_command();
-}
-else
-{
-    // Parent process
-    wait(&pid);
-}
+if (cmd[0] == '/')
+    return path_rel_abs_not_name(cmd);
 ```
 
-#### 3. Redirecting I/O
-
+**Relative paths:** `./script.sh`
 ```c
-// Redirect stdin from file
-int fd_in = open("input.txt", O_RDONLY);
-dup2(fd_in, STDIN_FILENO);
-close(fd_in);
+if (cmd[0] == '.')
+    return path_rel_abs_not_name(cmd);
+```
+
+**Command names:** `ls`, `grep`
+```c
+// Searches through PATH environment variable
+char **envp_path = find_path(envp);
+char *full_path = check_path(cmd, envp_path);
+```
+
+#### 4. I/O Redirection (`process.c`)
+
+**Process 1 (First command):**
+```c
+// Open input file
+int fd = open(argv[1], O_RDONLY);
+
+// Redirect stdin from infile
+dup2(fd, 0);
 
 // Redirect stdout to pipe
-dup2(pipe_fd[1], STDOUT_FILENO);
-close(pipe_fd[0]);
-close(pipe_fd[1]);
+dup2(pipex->my_pipe[1], 1);
 
-// Redirect stdin from pipe  
-dup2(pipe_fd[0], STDIN_FILENO);
-close(pipe_fd[0]);
-close(pipe_fd[1]);
+// Close unused file descriptors
+close(fd);
+close(pipex->my_pipe[0]);
+close(pipex->my_pipe[1]);
 
-// Redirect stdout to file
-int fd_out = open("output.txt", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-dup2(fd_out, STDOUT_FILENO);
-close(fd_out);
+// Execute command
+execve(path, cmd_args, envp);
 ```
 
-#### 4. Executing Commands
-
+**Process 2 (Second command):**
 ```c
-// Find command in PATH
-char *cmd_path = find_command_path(cmd, envp);
+// Open output file (create if doesn't exist, truncate if exists)
+int fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 
-// Parse command and arguments
-char **args = ft_split(cmd, ' ');
+// Redirect stdin from pipe
+dup2(pipex->my_pipe[0], 0);
 
-// Execute
-execve(cmd_path, args, envp);
+// Redirect stdout to outfile
+dup2(fd, 1);
 
-// If execve returns, there was an error
-perror("Command execution failed");
-exit(127);
-```
+// Close unused file descriptors
+close(fd);
+close(pipex->my_pipe[0]);
+close(pipex->my_pipe[1]);
 
-### Finding Commands in PATH
-
-```c
-char *find_command_path(char *cmd, char **envp)
-{
-    char **paths;
-    char *path;
-    char *full_path;
-    int i;
-    
-    // Check if cmd is already a path
-    if (access(cmd, F_OK | X_OK) == 0)
-        return (ft_strdup(cmd));
-    
-    // Get PATH environment variable
-    path = get_env_value("PATH", envp);
-    if (!path)
-        return (NULL);
-        
-    // Split PATH by ':'
-    paths = ft_split(path, ':');
-    
-    // Try each directory
-    i = 0;
-    while (paths[i])
-    {
-        full_path = create_path(paths[i], cmd);
-        if (access(full_path, F_OK | X_OK) == 0)
-        {
-            free_split(paths);
-            return (full_path);
-        }
-        free(full_path);
-        i++;
-    }
-    
-    free_split(paths);
-    return (NULL);
-}
+// Execute command
+execve(path, cmd_args, envp);
 ```
 
 ## 📁 Project Structure
 
 ```
-pipex/
-├── Makefile
-├── pipex.h              # Header file
-├── pipex.c              # Main program
-├── pipex_utils.c        # Helper functions
-├── path_utils.c         # PATH handling
-├── process.c            # Process management
-├── error.c              # Error handling
-├── pipex_bonus.c        # Bonus: multiple pipes
-├── here_doc_bonus.c     # Bonus: here_doc
-└── README.md
+Pipex/
+├── main.c              # Entry point, pipe creation, process forking
+├── process.c           # Process 1 and 2 implementations
+├── find_path.c         # PATH resolution and command finding
+├── pipex.h             # Header with structures and prototypes
+├── libft/              # Custom C library
+├── Makefile            # Build configuration
+└── Pipex/              # Additional test files
+```
+
+## 🔍 Data Structures
+
+### Main Pipex Structure
+```c
+typedef struct s_pipex
+{
+    pid_t   pid1;           // Process ID for child 1
+    pid_t   pid2;           // Process ID for child 2
+    int     my_pipe[2];     // Pipe file descriptors
+} t_pipex;
+```
+
+### Process Data Structure
+```c
+typedef struct s_process_data
+{
+    int     fd;                     // File descriptor for input/output
+    char    **cmd_have_flag;        // Command split into args
+    char    *path_that_have_cmd;    // Full path to executable
+    char    **envp_path;            // Array of PATH directories
+    int     there_is_error;         // Error flag
+    int     casee;                  // Which command (2 or 3)
+} t_process;
+```
+
+### Path Finding Helper
+```c
+typedef struct s_names
+{
+    char    *full_path;     // Complete path being tested
+    char    *cmd_slash;     // Command with leading slash
+    int     i;              // Iterator for PATH directories
+} t_names;
+```
+
+## ✅ Input Validation & Error Handling
+
+### Argument Validation
+```c
+if (argc != 5)
+    error_handle_custom("invalid num of argument", NULL, 1);
+```
+
+### File Access Errors
+- **Infile doesn't exist:** Error printed, process exits with code 1
+- **Outfile can't be created:** Error printed, process exits with code 1
+- **Permission denied:** Handled with proper error messages
+
+### Command Errors
+- **Command not found:** Exit code 127 (standard shell behavior)
+- **Command not executable:** Proper error message and exit
+- **Invalid PATH:** Handled gracefully
+
+### System Call Errors
+- **pipe() fails:** Error message and exit
+- **fork() fails:** Error message and exit
+- **dup2() fails:** Error message and exit
+- **execve() fails:** Error message and exit
+
+### Error Message Examples
+```bash
+# Invalid number of arguments
+$ ./pipex file.txt "cat"
+ERROR : invalid num of argument
+
+# File not found
+$ ./pipex nonexistent.txt "cat" "wc -l" out.txt
+ERROR : nonexistent.txt: No such file or directory
+
+# Command not found
+$ ./pipex input.txt "invalidcmd" "wc -l" output.txt
+ERROR : command not found
 ```
 
 ## 🧪 Testing
 
-### Basic Tests
+### Basic Functionality Tests
 
 ```bash
 # Test 1: Simple pipe
 ./pipex input.txt "cat" "wc -l" output.txt
 cat input.txt | wc -l
 
-# Test 2: Grep and sort
-./pipex file.txt "grep 42" "sort" result.txt
-< file.txt grep 42 | sort > result.txt
+# Test 2: Grep and count
+./pipex file.txt "grep 42" "wc -l" result.txt
+< file.txt grep 42 | wc -l > result.txt
 
-# Test 3: Complex command
-./pipex input.txt "grep a" "wc -l" output.txt
-< input.txt grep a | wc -l > output.txt
+# Test 3: Multiple flags
+./pipex data.txt "ls -la" "grep test" output.txt
+< data.txt ls -la | grep test > output.txt
 ```
 
-### Error Cases
+### Edge Cases
+
+```bash
+# Empty file
+./pipex empty.txt "cat" "wc -l" out.txt
+
+# Large file
+./pipex large.txt "cat" "wc -l" out.txt
+
+# Special characters in filename
+./pipex "file with spaces.txt" "cat" "wc -l" out.txt
+
+# Command with multiple arguments
+./pipex input.txt "grep -n hello" "wc -l" out.txt
+```
+
+### Error Testing
 
 ```bash
 # Non-existent infile
@@ -352,139 +318,103 @@ cat input.txt | wc -l
 ./pipex input.txt "invalidcmd" "wc -l" output.txt
 
 # Permission denied
-./pipex /etc/shadow "cat" "wc -l" output.txt
+chmod 000 restricted.txt
+./pipex restricted.txt "cat" "wc -l" output.txt
 
 # No arguments
 ./pipex
+
+# Too few arguments
+./pipex input.txt "cat" output.txt
 ```
 
-### Bonus Tests
+### Comparison with Shell
 
 ```bash
-# Multiple pipes
-./pipex infile "cat" "grep a" "wc -l" outfile
+# Create test file
+echo -e "line1\nline2\nline3" > test.txt
 
-# Here_doc
-./pipex here_doc EOF "grep hello" "wc -w" output.txt
+# Run with pipex
+./pipex test.txt "cat" "wc -l" out_pipex.txt
+
+# Run with shell
+< test.txt cat | wc -l > out_shell.txt
+
+# Compare results
+diff out_pipex.txt out_shell.txt
 ```
 
-### Memory Leak Testing
+## 🔑 Key Implementation Features
 
-```bash
-valgrind --leak-check=full --show-leak-kinds=all ./pipex input.txt "cat" "wc -l" output.txt
-```
+### 1. PATH Environment Variable Parsing
+- Extracts `PATH` from environment variables
+- Splits by `:` delimiter into array of directories
+- Searches each directory for executable
 
-### File Descriptor Leak Check
+### 2. Command Path Resolution Priority
+1. **Check if absolute path** (`/bin/ls`)
+2. **Check if relative path** (`./script.sh`)
+3. **Search in PATH directories** (`ls`, `grep`)
 
-```bash
-valgrind --track-fds=yes ./pipex input.txt "cat" "wc -l" output.txt
-```
+### 3. File Descriptor Management
+- Proper closing of unused pipe ends
+- No file descriptor leaks
+- Clean resource management
 
-## 💡 Key Insights
+### 4. Exit Code Handling
+- Returns exit status of last command (cmd2)
+- Properly uses `waitpid()` to get child status
+- Uses `WIFEXITED()` and `WEXITSTATUS()` macros
 
-### 1. Understanding File Descriptors
+### 5. Memory Management
+- All allocated memory is freed
+- `ft_split()` results are freed with `ft_free_all2()`
+- Path strings are freed after use
+- No memory leaks (verified with valgrind)
 
-```
-0 = STDIN_FILENO   (standard input)
-1 = STDOUT_FILENO  (standard output)
-2 = STDERR_FILENO  (standard error)
-```
+## 🎓 What I Learned
 
-Every open file gets a fd ≥ 3.
+### System Calls Mastered
+- `fork()` - Process creation
+- `pipe()` - Inter-process communication
+- `dup2()` - File descriptor duplication
+- `execve()` - Program execution
+- `waitpid()` - Process synchronization
+- `access()` - File permission checking
+- `open()` / `close()` - File operations
 
-### 2. The Power of dup2()
+### Concepts Understood
+- **Process forking**: Creating child processes
+- **File descriptors**: Understanding stdin (0), stdout (1), stderr (2)
+- **Pipes**: Creating communication channels between processes
+- **I/O redirection**: Changing where input comes from and output goes to
+- **Environment variables**: Accessing and parsing PATH
+- **Exit codes**: Proper error code handling (127 for command not found)
 
-`dup2(oldfd, newfd)` makes `newfd` a copy of `oldfd`:
+### Best Practices Applied
+- Comprehensive error handling for all system calls
+- Proper resource cleanup (closing fds, freeing memory)
+- Clear code structure with separate functions
+- Meaningful variable and function names
 
-```c
-dup2(file_fd, STDIN_FILENO);  // Now reading from stdin reads from file
-dup2(pipe_fd[1], STDOUT_FILENO); // Now writing to stdout writes to pipe
-```
+## 👤 Author
 
-### 3. Fork Creates a Copy
-
-After `fork()`:
-- Child gets a copy of all file descriptors
-- Changes in child don't affect parent
-- Both processes run simultaneously
-
-### 4. Close What You Don't Need
-
-Always close unused pipe ends:
-```c
-// In child 1 (writer)
-close(pipe_fd[0]);  // Don't need read end
-
-// In child 2 (reader)  
-close(pipe_fd[1]);  // Don't need write end
-
-// In parent
-close(pipe_fd[0]);  // Don't need either end
-close(pipe_fd[1]);
-```
-
-### 5. Wait for Children
-
-Parent must wait for children to prevent zombie processes:
-```c
-waitpid(pid1, NULL, 0);
-waitpid(pid2, NULL, 0);
-```
-
-## ⚠️ Common Pitfalls
-
-1. **Forgetting to close file descriptors**
-   - Causes fd leaks
-   - Can prevent EOF from being sent
-
-2. **Not waiting for child processes**
-   - Creates zombie processes
-   - Parent may exit before children finish
-
-3. **Wrong order of operations**
-   - Redirect before executing
-   - Close after duplicating
-
-4. **Not checking return values**
-   - fork() can fail
-   - execve() only returns on error
-   - pipe() can fail
-
-5. **PATH handling**
-   - Command might not be in PATH
-   - Need to check access permissions
-
-## 🎓 What This Project Teaches
-
-- **Process Management**: How Unix handles multiple processes
-- **IPC**: Inter-process communication fundamentals
-- **I/O Redirection**: How shells redirect input/output
-- **System Programming**: Low-level Unix programming
-- **Resource Management**: Properly closing fds and waiting for processes
+**Motaz** (moodeh)
+- GitHub: [@Motaz9999](https://github.com/Motaz9999)
+- 42 Intra: moodeh
 
 ## 📚 Resources
 
 - [Linux man pages](https://man7.org/linux/man-pages/)
-  - `man fork`
-  - `man pipe`
-  - `man dup2`
-  - `man execve`
-  - `man waitpid`
-- [Unix Pipes Tutorial](https://www.geeksforgeeks.org/pipe-system-call/)
-- [Process Creation](https://www.cs.odu.edu/~cs471w/spring11/lectures/fork-exec.htm)
-
-## 👤 Author
-
-**Motaz**
-- GitHub: [@Motaz9999](https://github.com/Motaz9999)
-- Intra: @moodeh
-
+  - `man 2 fork`
+  - `man 2 pipe`
+  - `man 2 dup2`
+  - `man 2 execve`
+  - `man 2 waitpid`
+  - `man 2 access`
+- [Beej's Guide to Unix IPC](https://beej.us/guide/bgipc/)
+- [Advanced Programming in the UNIX Environment](https://www.apuebook.com/)
+- also i use ai to understand deeply
 ---
 
-<div align="center">
-
-**⭐ Connecting processes, one pipe at a time**
-
-Made at 42 School
-
-</div>
+**Note:** This is a 42 school project. Use this as a learning reference to understand Unix process management and IPC concepts.
